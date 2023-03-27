@@ -3,6 +3,8 @@ function getRandom(number) {
     return console.log (result);
   }
 
+getRandom (0,2)
+
 function checkMaxLength (line, maxlegth) {
     if (line.length >= maxlegth) {
         return console.log(false);
@@ -10,3 +12,5 @@ function checkMaxLength (line, maxlegth) {
         return console.log(true);
     }
 } 
+
+checkMaxLength ("project", 140)

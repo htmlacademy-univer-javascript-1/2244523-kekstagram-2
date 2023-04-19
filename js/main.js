@@ -1,17 +1,19 @@
-const getRandomPositiveInteger = (a, b) => {
+  const getRandomPositiveInteger = (a, b) => 
+{
   const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
   const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
   const result = Math.random() * (upper - lower + 1) + lower;
   return Math.floor(result);
 }
 
-const getRandomArrayElement = (elements) => {
+  const getRandomArrayElement = (elements) =>
+ {
   return elements[getRandomPositiveInteger(0, elements.length - 1)];
 };
 
-const COMMENTS_ID = [];
+  const COMMENTS_ID = [];
 
-const MESSAGES = [
+  const MESSAGES = [
 'Всё отлично!',
 'В целом всё неплохо.Но не всё.',
 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра.',
@@ -22,7 +24,7 @@ const MESSAGES = [
 'Как можно было поймать такой неудачный момент?!',
 ]
 
-const NAMES = [
+  const NAMES = [
 'Уилл',
 'Томми',
 'Фил',
@@ -71,7 +73,6 @@ const randomIdIndex = getId();
 const randomUrlIndex = getUrl();
 const randomLikesIndex = getRandomPositiveInteger(15,200);
 const randomCommentIndex =  getRandomPositiveInteger(0, COMMENTS.length - 1);
-
 return {
 id: randomIdIndex,
 url: 'photos/' + randomUrlIndex + '.jpg',

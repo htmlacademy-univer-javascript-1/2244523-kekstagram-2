@@ -1,24 +1,27 @@
 
   import '.data.js'
   import '.util.js'
+  import '.pictures.js'
 
-const COMMENTS = () => {
-const randomIdIndex = getCommentId();
-const randomAvatarIndex = getRandomPositiveInteger(1,6);
-const randomMessageIndex = getRandomArrayElement(MESSAGES);
-const randomNameIndex = getRandomArrayElement(NAMES);
-return {
-  id: randomIdIndex,
-  avatar: 'img/avatar-' + randomAvatarIndex + '.svg',
-  message: randomMessageIndex,
-  name: randomNameIndex,
-}
-}
+
 
 const getId = (() => {
 let id = 1;
 return () => id++;
 })()
+
+const COMMENTS = () => {
+  const randomIdIndex = getCommentId();
+  const randomAvatarIndex = getRandomPositiveInteger(1,6);
+  const randomMessageIndex = getRandomArrayElement(MESSAGES);
+  const randomNameIndex = getRandomArrayElement(NAMES);
+  return {
+    id: randomIdIndex,
+    avatar: 'img/avatar-' + randomAvatarIndex + '.svg',
+    message: randomMessageIndex,
+    name: randomNameIndex,
+  }
+  }
 
 const getCommentId = () => {
 let id = getRandomPositiveInteger(1,100);
@@ -45,6 +48,6 @@ likes: randomLikesIndex,
 comments: COMMENTS(randomCommentIndex),
 }
 }
-const photoDescriptions = Array.from({length: 25}, createPhoto);
 
 console.log(photoDescriptions);
+

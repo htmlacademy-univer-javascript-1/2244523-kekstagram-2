@@ -1,8 +1,9 @@
 const bigPicture = document.querySelector('.big-picture');
+const escapePressed = (ev) => ev.key === 'Escape' && closeBigPicture();
 document.addEventListener('keydown',(KeyboardEvent) => escapePressed(ev));
 bigPicture.querySelector('#picture-cancel').addEventListener('click', closeBigPicture);
 
-const escapePressed = (ev) => ev.key === 'Escape' && closeBigPicture();
+
 
 const AVATAR_IMAGE_SIZE = 35;
 

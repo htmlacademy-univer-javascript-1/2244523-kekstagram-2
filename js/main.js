@@ -49,5 +49,5 @@ comments: COMMENTS(randomCommentIndex),
 }
 }
 
-console.log(photoDescriptions);
+console.log(createPhoto);
 

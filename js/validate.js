@@ -33,7 +33,7 @@ const onHashtagsTextInput = () => {
   if (duplicateHashtagsArr && duplicateHashtagsArr.length !== 0) {
     hashtags.setCustomValidity(`Пожалуйста, удалите повторяющиеся хэш-теги: ${duplicateHashtagsArr.join(', ')}`);
     hashtags.style.borderColor = '#FF5F49';
-  } else if (hashtagsArr.length > MAX_HASHTAG_QUANTITY) {
+  } else if (hashtagsArr.length > MaxHashtag) {
     hashtags.setCustomValidity(`Нельзя указывать больше ${MaxHashtag} хэш-тегов. Просьба удалить лишние ${hashtagsArr.length - MaxHashtag}`);
     hashtags.style.borderColor = '#FF5F49';
   } else if (invalidHashtagsArr.length !== 0) {

@@ -1,6 +1,4 @@
 
-
-
 import { showComments } from './comments.js';
 import { isEscape } from './util.js';
 import { picturesWrap } from './pictures.js';

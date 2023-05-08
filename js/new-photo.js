@@ -1,3 +1,4 @@
+
 import { FILE_TYPES } from "./constants.js";
 
 const fileChooser = document.querySelector('.img-upload__input');

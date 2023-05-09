@@ -1,84 +1,93 @@
-import { MaxHashtag, MAX_COMMENT_LENGTH } from "./constants.js";
+import { MAX_COMMENT_LENGTH, MAX_HASHTAG_SYMBOLS, MAX_HASHTAGS} from "./constants.js";
+import { sendData } from './messages.js';
 
-const imageLoad = document.querySelector('.img-upload__overlay');
-const regExp = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
-const hashtags = imageLoad.querySelector('.text__hashtags');
-const commentField = imageLoad.querySelector('.text__description');
+const form=document.querySelector('.img-upload__form');
+const inputHashtag=document.querySelector('.text__hashtags');
+const inputComment=document.querySelector('.text__description');
 
+const pristine = new Pristine(form, {
+  classTo: 'img-upload__text',
+  errorClass: 'img-upload__text--invalid',
+  successClass: 'img-upload__text--valid',
+  errorTextParent: 'img-upload__text',
+  errorTextTag: 'div',
+  errorTextClass: 'img-upload__error-text',
+});
 
-const onHashtagsTextInput = () => {
-  hashtags.value = hashtags.value.replaceAll('  ', ' ');
+let errorMessage = '';
 
-  const hashtagsArr = hashtags.value.split(' ');
-  const invalidHashtagsArr = [];
+const error = () => errorMessage;
 
-  if (hashtagsArr[0] === '') {
-    hashtagsArr.shift();
+const hashtagsValidate = (value) => {
+  errorMessage='';
+  const inputText = value.toLowerCase().trim();
+
+  if (!inputText){
+    return true;
   }
-  if (hashtagsArr[hashtagsArr.length - 1] === '') {
-    hashtagsArr.pop();
+
+  const inputArray = inputText.split(/\s+/);
+
+  if (inputArray.length===0){
+    return true;
   }
-  hashtagsArr.forEach((hashtag) => {
-    if (!hashtag.match(regExp)) {
-      invalidHashtagsArr.push(hashtag);
+
+  const rules = [
+    {
+      check : inputArray.some((item) => item[0]!=='#'),
+      error : 'Хэш-тег должен начинаться с символа #',
+    },
+    {
+      check: inputArray.some((item) => item[0]==='#' && item.length===1),
+      error : 'Хэш-тег не может состоять только из одной решётки',
+    },
+    {
+      check: inputArray.some((item) => item.indexOf('#',1) >=1),
+      error : 'Хэш-теги разделяются пробелами',
+    },
+    {
+      check: inputArray.some((item,index,array) => array.includes(item,index+1)),
+      error: 'Хэш-теги не должны повторяться',
+    },
+    {
+      check: inputArray.length>MAX_HASHTAGS,
+      error : `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
+    },
+    {
+      check: inputArray.some((item) => item.length>MAX_HASHTAG_SYMBOLS),
+      error : `Максимальная длина одного хэш-тега ${MAX_HASHTAG_SYMBOLS} символов, включая решётку`,
+    },
+    {
+      check: inputArray.some((item) => !/^#[a-zа-яё0-9]{1,19}$/i.test(item)),
+      error : 'Хэш-тег содержит недопустимые символы',
     }
+  ];
+
+  return rules.every((rule) => {
+    const isInvalid = rule.check;
+    if (isInvalid){
+      errorMessage = rule.error;
+    }
+    return !isInvalid;
   });
+};
 
-  for (let i = 0; i < hashtagsArr.length; i++) {
-    hashtagsArr[i] = hashtagsArr[i].toLowerCase();
+const commentsValidate = (comment) => comment.length <= MAX_COMMENT_LENGTH;
+
+pristine.addValidator(inputHashtag, hashtagsValidate, error);
+pristine.addValidator(inputComment, commentsValidate,  `Длина комментария должна быть не более ${MAX_COMMENT_LENGTH } символов`);
+
+const onFormInput = (evt) => {
+  evt.preventDefault();
+  if (pristine.validate()){
+    sendData();
   }
-
-  const duplicateHashtagsArr = hashtagsArr.filter((hashtag, index, arr) => arr.indexOf(hashtag) !== index);
-
-  if (duplicateHashtagsArr && duplicateHashtagsArr.length !== 0) {
-    hashtags.setCustomValidity(`Пожалуйста, удалите повторяющиеся хэш-теги: ${duplicateHashtagsArr.join(', ')}`);
-    hashtags.style.borderColor = '#FF5F49';
-  } else if (hashtagsArr.length > MaxHashtag) {
-    hashtags.setCustomValidity(`Нельзя указывать больше ${MaxHashtag} хэш-тегов. Просьба удалить лишние ${hashtagsArr.length - MaxHashtag}`);
-    hashtags.style.borderColor = '#FF5F49';
-  } else if (invalidHashtagsArr.length !== 0) {
-    hashtags.setCustomValidity(`Некорректно введен хэш-тег: ${invalidHashtagsArr.join(', ')}`);
-    hashtags.style.borderColor = '#FF5F49';
-  } else {
-    hashtags.setCustomValidity('');
-    hashtags.style.borderColor = '';
-  }
-  hashtags.reportValidity();
 };
 
-hashtags.addEventListener('input', onHashtagsTextInput);
-
-
-hashtags.addEventListener('keydown', (evt) => {
-  evt.stopPropagation();
-});
-
-
-const commentTextInput = () => {
-  const valueLength = commentField.value.length;
-  if (valueLength > MAX_COMMENT_LENGTH) {
-    commentField.setCustomValidity(`Максимальная длина комментария 140 символов. Удалите лишние ${valueLength - MAX_COMMENT_LENGTH} симв.`);
-    commentField.style.borderColor = '#FF5F49';
-  } else {
-    commentField.setCustomValidity('');
-    commentField.style.borderColor = '';
-  }
-  commentField.reportValidity();
+const refreshPrinstine = () => {
+  pristine.reset();
 };
 
-commentField.addEventListener('input', commentTextInput);
+inputHashtag.addEventListener('input', hashtagsValidate);
 
-
-commentField.addEventListener('keydown', (evt) => {
-  evt.stopPropagation();
-});
-
-const hashtagValidate = () => {
-  hashtags.addEventListener('input', onHashtagsTextInput);
-};
-
-const commentValidate = () => {
-  commentField.addEventListener('input', commentTextInput);
-};
-
-export { hashtagValidate, commentValidate, hashtags, commentField, imageLoad, onHashtagsTextInput, commentTextInput };
+export {onFormInput, refreshPrinstine};

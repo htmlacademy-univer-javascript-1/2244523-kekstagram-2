@@ -1,122 +1,77 @@
+import {sendRequest} from './api.js';
+import { closeForm, onEscKeyDown } from './user-form.js';
 import { isEscape } from './util.js';
 
-const ALERT_SHOW_TIME = 5000;
 
-const errorContainerTemplate = document.querySelector('#error')
-  .content
-  .querySelector('.error');
+const MESSAGE_Z_INDEX = 100;
 
+const form = document.querySelector('.img-upload__form');
+const successTemplate = document.querySelector('#success').content.querySelector('.success');
+const errorTemplate = document.querySelector('#error').content.querySelector('.error');
 
-const successContainerTemplate = document.querySelector('#success')
-  .content
-  .querySelector('.success');
+let message;
 
+const closeMessage = () => {
+  message.classList.add('hidden');
+};
 
-const showErrorMessage = () => {
-  const errorContainer = errorContainerTemplate.cloneNode(true);
-  const errorCloseButton = errorContainer.querySelector('.error__button');
+const onErrorEscapeKeyDown = (evt) => {
+  if(isEscape(evt)) {
+    closeMessage();
+    document.addEventListener('keydown', onEscKeyDown);
+    document.removeEventListener('keydown', onErrorEscapeKeyDown);
+  }
+};
 
-  errorContainer.style.zIndex = '100';
-
-  document.body.append(errorContainer);
-
-  const onPopupEscKeydown = (evt) => {
-    if (isEscape(evt)) {
-      evt.preventDefault();
-      onCloseAlertClick();
-    }
-  };
-
-  const onOutBoxClick = (evt) => {
-    if (!errorContainer.querySelector('.error__inner').contains(evt.target)) {
-      evt.preventDefault();
-      onCloseAlertClick();
-    }
-  };
-
-  function onCloseAlertClick() {
-    errorContainer.remove();
-    errorCloseButton.removeEventListener('click', onCloseAlertClick);
-    document.removeEventListener('keydown', onPopupEscKeydown);
-    document.removeEventListener('click', onOutBoxClick);
+const showMessage = (isSuccessful) => {
+  if (isSuccessful){
+    message = successTemplate.cloneNode(true);
+  }
+  else {
+    message = errorTemplate.cloneNode(true);
+    document.removeEventListener('keydown', onEscKeyDown);
+    document.addEventListener('keydown', onErrorEscapeKeyDown);
   }
 
-  errorCloseButton.addEventListener('click', onCloseAlertClick);
-  document.addEventListener('keydown', onPopupEscKeydown);
-  document.addEventListener('click', onOutBoxClick);
+  message.style.zIndex = MESSAGE_Z_INDEX;
+  message.classList.remove('hidden');
 
-  setTimeout(() => {
-    errorContainer.remove();
-  }, ALERT_SHOW_TIME);
+  document.body.appendChild(message);
 };
 
+const closeSendingForm = () => {
+  closeMessage();
+  closeForm();
+};
 
-const showSuccessMessage = () => {
-  const successContainer = successContainerTemplate.cloneNode(true);
-  const successCloseButton = successContainer.querySelector('.success__button');
+const onSuccessButtonClicked = () => closeSendingForm();
 
-  successContainer.style.zIndex = '100';
+const onErrorButtonClicked = () => closeMessage();
 
-  document.body.append(successContainer);
+const onSuccess = () => {
+  showMessage(true);
+  message.addEventListener('click', onSuccessButtonClicked);
+};
 
-  const onPopupEscKeydown = (evt) => {
-    if (isEscape(evt)) {
-      evt.preventDefault();
-      onCloseMessageClick();
+const onFail = () => {
+  showMessage(false);
+  message.addEventListener('click', onErrorButtonClicked);
+};
+
+const onFormEscKeyDown = (evt) => {
+  if(isEscape(evt)){
+    closeMessage();
+
+    if (message.classList.contains('success')){
+      closeForm();
     }
-  };
 
-  const onOutBoxClick = (evt) => {
-    if (!successContainer.querySelector('.success__inner').contains(evt.target)) {
-      evt.preventDefault();
-      onCloseMessageClick();
-    }
-  };
-
-  function onCloseMessageClick() {
-    successContainer.remove();
-    successCloseButton.removeEventListener('click', onCloseMessageClick);
-    document.removeEventListener('keydown', onPopupEscKeydown);
-    document.removeEventListener('click', onOutBoxClick);
+    form.removeEventListener('keydown', onFormEscKeyDown);
   }
-
-  successCloseButton.addEventListener('click', onCloseMessageClick);
-  document.addEventListener('keydown', onPopupEscKeydown);
-  document.addEventListener('click', onOutBoxClick);
-
-  setTimeout(() => {
-    successContainer.remove();
-  }, ALERT_SHOW_TIME);
 };
 
-const showCustomErrorMessage = (message) => {
-  const alertContainer = document.createElement('div');
-  alertContainer.style.zIndex = '100';
-  alertContainer.style.position = 'absolute';
-  alertContainer.style.left = '50%';
-  alertContainer.style.top = '40%';
-  alertContainer.style.bottom = '0';
-  alertContainer.style.right = '0';
-  alertContainer.style.transform = 'translate(-50%, -50%)';
-  alertContainer.style.height = '30%';
-  alertContainer.style.borderRadius = '10px';
-  alertContainer.style.display = 'flex';
-  alertContainer.style.justifyContent = 'center';
-  alertContainer.style.alignItems = 'center';
-  alertContainer.style.padding = '50px 50px';
-  alertContainer.style.fontSize = '30px';
-  alertContainer.style.textAlign = 'center';
-  alertContainer.style.lineHeight = '1.2';
-  alertContainer.style.backgroundColor = '#FF5F49';
+const sendData = () => sendRequest(onSuccess, onFail, 'POST', new FormData(form));
 
-  alertContainer.textContent = message;
+form.addEventListener('keydown', onFormEscKeyDown);
 
-  document.body.append(alertContainer);
-
-  setTimeout(() => {
-    alertContainer.remove();
-  }, ALERT_SHOW_TIME);
-};
-
-
-export { showErrorMessage, showSuccessMessage, showCustomErrorMessage };
+export {sendData};

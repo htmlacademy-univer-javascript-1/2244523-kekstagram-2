@@ -6,7 +6,7 @@ import { sendData } from './api.js';
 import { fileChooser } from './new-photo.js';
 import { showErrorMessage, showSuccessMessage } from './error.js';
 import { hashtagValidate, commentValidate, hashtags, commentField, imageLoad, onHashtagsTextInput, commentTextInput } from './validate.js';
-import { onScaleBiggerButtonClick, onScaleSmallerButtonClick, scaleSmallerButton, scaleBiggerButton } from './scale.js';
+import { scaleControlSmallerButton, scaleControlBiggerButton, scaleControlValue, scaleValueHidden, onScaleSmallerClick, onScaleBiggerClick } from './scale.js';
 
 const formUploadImage = document.querySelector('.img-upload__form');
 const modalView = document.querySelector('body');
@@ -15,8 +15,8 @@ const buttonModalClose = document.querySelector('.img-upload__cancel');
 
 
 const scaleChange = () => {
-    scaleSmallerButton.addEventListener('click',onScaleSmallerButtonClick);
-    scaleBiggerButton.addEventListener('click', onScaleBiggerButtonClick);
+  scaleControlSmallerButton.addEventListener('click', onScaleSmallerClick);
+  scaleControlBiggerButton.addEventListener('click', onScaleBiggerClick);
 };
 
 
@@ -44,8 +44,8 @@ function closeFormPopup() {
   modalView.classList.remove('modal-open');
   imageLoad.classList.add('hidden');
   
-  scaleSmallerButton.removeEventListener('click', onScaleSmallerButtonClick);
-  scaleBiggerButton.removeEventListener('click', onScaleBiggerButtonClick);
+  scaleControlSmallerButton.removeEventListener('click', onScaleSmallerClick);
+  scaleControlBiggerButton.removeEventListener('click', onScaleBiggerClick);
   hashtags.removeEventListener('input', onHashtagsTextInput);
   commentField.addEventListener('input', commentTextInput);
   

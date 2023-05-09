@@ -1,41 +1,50 @@
-import { DIVISOR, zoomValue } from "./constants";
+import { SCALE_DEFAULT } from "./constants.js";
 
-const scaleControls = document.querySelector('.img-upload__scale');
+const Scale = {
+  MIN: 25,
+  MAX: 100,
+  STEP: 25,
+};
 
-const scaleControlSmallerButton = scaleControls.querySelector('.scale__control--smaller');
-const scaleControlBiggerButton = scaleControls.querySelector('.scale__control--bigger');
-const scaleControlValue = scaleControls.querySelector('.scale__control--value');
+const scaleValue = document.querySelector('.scale__control--value');
+const scaleSmallerBtn = document.querySelector('.scale__control--smaller');
+const scaleBiggerBtn = document.querySelector('.scale__control--bigger');
+const previewPhoto = document.querySelector('.img-upload__preview');
 
-const scaleValueHidden = scaleControls.querySelector('.scale__value--hidden'); 
+let photoScaleValue = SCALE_DEFAULT;
 
-const formImage = document.querySelector('.img-upload__form');
-const sizeImg = formImage.querySelector('img');
-
+const setScale = () => (previewPhoto.style['transform'] = `scale(${photoScaleValue/100})`);
 
 const onScaleSmallerClick = () => {
-  let size = parseInt(scaleControlValue.value, 10);
-  if (size === zoomValue.MIN) {
+  if (photoScaleValue === 25) {
     return;
   }
-  size -= zoomValue.STEP;
-  scaleControlValue.value = `${size}%`;
-  sizeImg.style.transform = `scale(${size / DIVISOR})`;
-  scaleValueHidden.value = scaleControlValue.value;
+
+  photoScaleValue = photoScaleValue - STEP;
+  scaleValue.value =`${photoScaleValue}%`;
+  setScale();
 };
 
 const onScaleBiggerClick = () => {
-  let size = parseInt(scaleControlValue.value, 10);
-  if (size === zoomValue.MAX) {
+  if (photoScaleValue === 100) {
     return;
   }
-  size += zoomValue.STEP;
-  scaleControlValue.value = `${size}%`;
-  sizeImg.style.transform = `scale(${size / DIVISOR})`;
-  scaleValueHidden.value = scaleControlValue.value;
+
+  photoScaleValue = photoScaleValue + STEP;
+  scaleValue.value = `${photoScaleValue}%`;
+  setScale();
 };
-scaleControlBiggerButton.addEventListener('click', () => {
 
-});
+const reloadScale = () => {
+  photoScaleValue = SCALE_DEFAULT;
+  scaleValue.value =`${photoScaleValue}%`;
+  setScale();
+};
 
-export { scaleControlSmallerButton, scaleControlBiggerButton, scaleControlValue, scaleValueHidden, onScaleSmallerClick, onScaleBiggerClick };
+scaleSmallerBtn.addEventListener('click', onScaleSmallerClick);
+scaleBiggerBtn.addEventListener('click', onScaleBiggerClick);
+
+export {reloadScale};
+
+
 

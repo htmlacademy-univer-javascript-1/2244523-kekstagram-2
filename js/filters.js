@@ -1,65 +1,28 @@
-const sortBlock = document.querySelector('.img-filters'); 
-const sortDefault = sortBlock.querySelector('#filter-default'); 
-const sortRandom = sortBlock.querySelector('#filter-random'); 
-const sortDiscussed = sortBlock.querySelector('#filter-discussed'); 
+import {  debounce, getRandomArrayElement } from './util.js';
+import { renderPhotos, clearPhotos } from './pictures.js';
+import { getPhotos } from './main.js';
+import {MAX_COUNT_RANDOM_PHOTO} from './constants.js'
 
-const sortInput = sortBlock.querySelector('#sort-input'); 
-
-
-const showSortBlock = () => {
-  sortBlock.classList.remove('img-filters--inactive');
+const filterForm = document.querySelector('.img-filters__form');
+const filters = {
+  'filter-default': () => getPhotos().slice(),
+  'filter-random': () => getRandomArrayElement(getPhotos(), MAX_COUNT_RANDOM_PHOTO),
+  'filter-discussed': () => getPhotos().slice().sort((photo1, photo2) => photo2.comments.length - photo1.comments.length),
 };
 
+const onFilterFormClick = debounce((evt) => {
+  if(evt.target.tagName === 'BUTTON') {
+    const selectedButton = filterForm.querySelector('.img-filters__button--active');
 
-const sortDefaultClick = (cb) => {
-  sortDefault.addEventListener('click', () => {
-    sortDefault.classList.add('img-filters__button--active');
-    sortRandom.classList.remove('img-filters__button--active');
-    sortDiscussed.classList.remove('img-filters__button--active');
+    if(selectedButton){
+      selectedButton.classList.remove('img-filters__button--active');
+    }
 
-    sortInput.value = 'default';
-    cb();
-  });
-};
+    evt.target.classList.add('img-filters__button--active');
 
+    clearPhotos();
+    renderPhotos(filters[evt.target.id]());
+  }
+});
 
-const sortRandomClick = (cb) => {
-  sortRandom.addEventListener('click', () => {
-    sortDefault.classList.remove('img-filters__button--active');
-    sortRandom.classList.add('img-filters__button--active');
-    sortDiscussed.classList.remove('img-filters__button--active');
-
-    sortInput.value = 'random';
-    cb();
-  });
-};
-
-
-const sortDiscussedClick = (cb) => {
-  sortDiscussed.addEventListener('click', () => {
-    sortDefault.classList.remove('img-filters__button--active');
-    sortRandom.classList.remove('img-filters__button--active');
-    sortDiscussed.classList.add('img-filters__button--active');
-
-    sortInput.value = 'discussed';
-    cb();
-  });
-};
-
-
-const comparePicturesIds = (pictureA, pictureB) => {
-  const rankIdA = pictureA.id;
-  const rankIdB = pictureB.id;
-
-  return rankIdA - rankIdB;
-};
-
-
-const comparePicturesComments = (pictureA, pictureB) => {
-  const rankCommentsA = pictureA.comments.length;
-  const rankCommentsB = pictureB.comments.length;
-
-  return rankCommentsB - rankCommentsA;
-};
-
-export { showSortBlock, sortBlock, sortInput, comparePicturesIds, comparePicturesComments, sortDefaultClick, sortRandomClick, sortDiscussedClick };
+filterForm.addEventListener('click', onFilterFormClick);

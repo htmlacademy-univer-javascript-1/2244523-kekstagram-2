@@ -1,20 +1,15 @@
 const getData = (onSuccess, onError) => {
     fetch('https://26.javascript.pages.academy/kekstagram/data')
-      .then((response) => {
-        if (response.ok) {
-          return response;
-        }
-      })
       .then((response) => response.json())
       .then((photos) => {
         onSuccess(photos);
       })
-      .catch((err) => {
-        onError(err);
+      .catch(() => {
+        onError('Произошла ошибка. Не удалось загрузить данные.');
       });
   };
   
-  const sendData = (onSuccess, onFail, onFinally, body) => {
+  const sendRequest = (onSuccess, onFail, body) => {
     fetch(
       'https://26.javascript.pages.academy/kekstagram',
       {
@@ -26,15 +21,12 @@ const getData = (onSuccess, onError) => {
         if (response.ok) {
           onSuccess();
         } else {
-          onFail();
+          onFail('Не удалось. Попробуйте еще раз.');
         }
       })
       .catch(() => {
-        onSuccess();
-      })
-      .finally(() => {
-        onFinally();
+        onFail('Не удалось. Попробуйте ещё раз');
       });
   };
   
-  export { getData, sendData };
+  export { getData, sendRequest };

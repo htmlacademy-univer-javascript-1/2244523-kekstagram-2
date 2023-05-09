@@ -1,28 +1,41 @@
-import { Scale } from "./constants.js";
+import { DIVISOR, zoomValue } from "./constants";
 
-const imageSize = document.querySelector('.scale__control--value');
-const scaleSmallerButton = document.querySelector('.scale__control--smaller');
-const scaleBiggerButton = document.querySelector('.scale__control--bigger');
-const imagePreview = document.querySelector('.simg-upload__preview-img');
+const scaleControls = document.querySelector('.img-upload__scale');
 
-const toggleScaleButtons = (difference) => {
-    let slideValue = Number(imageSize.value.replace('%', '')) + difference;
-    slideValue = Math.min(Math.max(slideValue, Scale.MIN), Scale.MAX);
-    imagePreview.style.transform = 'scale(${slideValue / 100})';
-    imageSize.value = '${slideValue}%';
+const scaleControlSmallerButton = scaleControls.querySelector('.scale__control--smaller');
+const scaleControlBiggerButton = scaleControls.querySelector('.scale__control--bigger');
+const scaleControlValue = scaleControls.querySelector('.scale__control--value');
+
+const scaleValueHidden = scaleControls.querySelector('.scale__value--hidden'); 
+
+const formImage = document.querySelector('.img-upload__form');
+const sizeImg = formImage.querySelector('img');
+
+
+const onScaleSmallerClick = () => {
+  let size = parseInt(scaleControlValue.value, 10);
+  if (size === zoomValue.MIN) {
+    return;
+  }
+  size -= zoomValue.STEP;
+  scaleControlValue.value = `${size}%`;
+  sizeImg.style.transform = `scale(${size / DIVISOR})`;
+  scaleValueHidden.value = scaleControlValue.value;
 };
 
-const onScaleBiggerButtonClick = () => toggleScaleButtons(Scale.STEP);
-const onScaleSmallerButtonClick = () => toggleScaleButtons(-Scale.STEP);
-
-const addEventScaleButtons = () => {
-    scaleBiggerButton.addEventListener('click', onScaleBiggerButtonClick);
-    scaleSmallerButton.addEventListener('click', onScaleSmallerButtonClick);
+const onScaleBiggerClick = () => {
+  let size = parseInt(scaleControlValue.value, 10);
+  if (size === zoomValue.MAX) {
+    return;
+  }
+  size += zoomValue.STEP;
+  scaleControlValue.value = `${size}%`;
+  sizeImg.style.transform = `scale(${size / DIVISOR})`;
+  scaleValueHidden.value = scaleControlValue.value;
 };
+scaleControlBiggerButton.addEventListener('click', () => {
 
-const removeEventScaleButtons = () => {
-    scaleBiggerButton.removeEventListener('click', onScaleBiggerButtonClick);
-    scaleSmallerButton.removeEventListener('click', onScaleSmallerButtonClick);
-};
+});
 
-export { addEventScaleButtons, removeEventScaleButtons, onScaleBiggerButtonClick, onScaleSmallerButtonClick, scaleSmallerButton, scaleBiggerButton };
+export { scaleControlSmallerButton, scaleControlBiggerButton, scaleControlValue, scaleValueHidden, onScaleSmallerClick, onScaleBiggerClick };
+

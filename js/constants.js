@@ -5,19 +5,18 @@ export const MAX_COMMENT_LENGTH = 140;
 export const MAX_COUNT_RANDOM_PHOTO = 10;
 export const AVATAR_IMAGE_SIZE = 35;
 export const RERENDER_DELAY = 500;
-
+export const DIVISOR = 100;
 export const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
+const zoomValue = {
+  MIN: 25,
+  MAX: 100,
+  STEP: 25,
+};
 export const MaxHashtag = {
     LENGTH: 20,
     COUNT: 5
 };
-
-export const Scale = {
-    MAX: 100,
-    MIN: 25,
-    STEP: 25
-}
 
 export const PhotoValide = {
     SUCCESS: 'success',

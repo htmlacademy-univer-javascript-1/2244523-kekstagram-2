@@ -5,11 +5,14 @@ const Urls = {
   POST: 'https://26.javascript.pages.academy/kekstagram',
 };
 
-const getData = (onSuccess, onFail) => {
+const getData = (onSuccess) => {
   fetch(Urls.GET)
-    .then((response) => response.json())
-    .then((photos) => onSuccess(photos))
-    .catch(() => { showAlert('Ошибка загрузки данных');});
+  .then((response) => response.json())
+  .then((photos) => {
+    onSuccess(photos);
+    filterPhotosContainer.classList.remove('img-filters--inactive');
+  })
+  .catch(() => { showAlert('Ошибка загрузки данных');});
 };
 
 const sendData = (onSuccess, onFail, body) => {
@@ -27,7 +30,5 @@ const sendData = (onSuccess, onFail, body) => {
   })
     .catch(() => onFail('Не удалось опубликовать'));
 };
-
-
 
 export {getData, sendData};

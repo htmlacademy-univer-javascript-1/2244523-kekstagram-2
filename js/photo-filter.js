@@ -15,14 +15,14 @@ const filterUpdate = {
 };
 
 noUiSlider.create(slider, {
-    range: {
-      min: 0,
-      max: 100,
-    },
-    start: 100,
-    step: 1,
-    connect: 'lower',
-  });
+  range: {
+    min: 0,
+    max: 100,
+  },
+  start: 100,
+  step: 1,
+  connect: 'lower',
+});
 
 function effectСhoice(value,update){
   img.className='';
@@ -36,7 +36,7 @@ function effectСhoice(value,update){
     step: update[2],
     connect: 'lower',
   });
-  
+
   slider.noUiSlider.on('update', () => {
     sliderValue.value = slider.noUiSlider.get();
     if (value === 'none') {
@@ -57,4 +57,5 @@ function effectUser(){
   });
 }
 effectUser();
+
 export {effectList, sliderValue, slider, sliderElement, img};

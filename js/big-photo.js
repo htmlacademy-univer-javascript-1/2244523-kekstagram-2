@@ -13,7 +13,7 @@ const commentTemplate = commentTemplateAll.querySelector('li');
 const bigPictureCancel = document.querySelector('#picture-cancel');
 const loaderButton = document.querySelector('.comments-loader');
 const commentsLoader = document.querySelector('.comments-loader');
-const commentItem = document.querySelectorAll('.social__comment');
+
 
 
 const createCommentPhotoUser = (commentsInfo) => {

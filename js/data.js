@@ -23,12 +23,6 @@ function getRandomElement(arr) {
   return element;
 }
 
-function getId() {
-  let id = 1;
-  return () => id++;
-}
-
-
 function getCommentId() {
   const id = getRandomPositiveInteger (1, 25);
   return id;

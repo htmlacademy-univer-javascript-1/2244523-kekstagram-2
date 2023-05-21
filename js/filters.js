@@ -8,24 +8,20 @@ const pictureContainer = document.querySelector('.pictures');
 const filterContainer = document.querySelector('.img-filters');
 const filterButtons = [...document.querySelectorAll('.img-filters__button')];
 
-
-
 function buttonFilterClick() {
     filterContainer.classList.remove('img-filters--inactive');
   
-    filterContainer.addEventListener('click', (evt) => {
-      const target = evt.target;
-  
-      if (target && target.matches('.img-filters__button')) {
-        filterButtons.forEach((btn) => {
-          btn.classList.remove('img-filters__button--active');
-        });
-  
-        target.classList.add('img-filters__button--active');
+  filterContainer.addEventListener('click', (evt) => {
+    const target = evt.target;
+    if (target && target.matches('.img-filters__button')) {
+      filterButtons.forEach((btn) => {
+    btn.classList.remove('img-filters__button--active');
+      });
+      target.classList.add('img-filters__button--active');
       }
     });
   }
-buttonFilterClick();
+ buttonFilterClick();
 
 const buttonDefault = document.querySelector('#filter-default');
 const buttonRandom = document.querySelector('#filter-random');

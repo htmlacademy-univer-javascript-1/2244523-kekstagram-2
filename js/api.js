@@ -1,32 +1,33 @@
-const getData = (onSuccess, onError) => {
-    fetch('https://26.javascript.pages.academy/kekstagram/data')
-      .then((response) => response.json())
-      .then((photos) => {
-        onSuccess(photos);
-      })
-      .catch(() => {
-        onError('Произошла ошибка. Не удалось загрузить данные.');
-      });
-  };
-  
-  const sendRequest = (onSuccess, onFail, body) => {
-    fetch(
-      'https://26.javascript.pages.academy/kekstagram',
-      {
-        method: 'POST',
-        body,
-      },
-    )
-      .then((response) => {
-        if (response.ok) {
-          onSuccess();
-        } else {
-          onFail('Не удалось. Попробуйте еще раз.');
-        }
-      })
-      .catch(() => {
-        onFail('Не удалось. Попробуйте ещё раз');
-      });
-  };
-  
-  export { getData, sendRequest };
+import {showAlert} from './util.js';
+
+const Urls = {
+  GET: 'https://26.javascript.pages.academy/kekstagram/data',
+  POST: 'https://26.javascript.pages.academy/kekstagram',
+};
+
+const getData = (onSuccess, onFail) => {
+  fetch(Urls.GET)
+    .then((response) => response.json())
+    .then((photos) => onSuccess(photos))
+    .catch(() => { showAlert('Ошибка загрузки данных');});
+};
+
+const sendData = (onSuccess, onFail, body) => {
+  fetch(Urls.POST,
+    {
+      method: 'POST',
+      body,
+    }
+  ).then((response) => {
+    if (response.ok) {
+      onSuccess();
+    } else {
+      onFail('Не удалось опубликовать');
+    }
+  })
+    .catch(() => onFail('Не удалось опубликовать'));
+};
+
+
+
+export {getData, sendData};

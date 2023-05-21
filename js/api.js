@@ -7,12 +7,11 @@ const Urls = {
 
 const getData = (onSuccess) => {
   fetch(Urls.GET)
-  .then((response) => response.json())
-  .then((photos) => {
-    onSuccess(photos);
-    filterPhotosContainer.classList.remove('img-filters--inactive');
+    .then((response) => response.json())
+    .then((photos) => {
+      onSuccess(photos);
   })
-  .catch(() => { showAlert('Ошибка загрузки данных');});
+    .catch(() => { showAlert('Ошибка загрузки данных');});
 };
 
 const sendData = (onSuccess, onFail, body) => {

@@ -14,8 +14,6 @@ const bigPictureCancel = document.querySelector('#picture-cancel');
 const loaderButton = document.querySelector('.comments-loader');
 const commentsLoader = document.querySelector('.comments-loader');
 
-
-
 const createCommentPhotoUser = (commentsInfo) => {
   const commentFragment = document.createDocumentFragment();
   commentsInfo.forEach(({ avatar, name, message}) => {

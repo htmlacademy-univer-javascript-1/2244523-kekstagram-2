@@ -3,7 +3,7 @@ const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
 import {inputHashtags, hashtagsValid, inputComments, isAmountValid, isEveryHashtagSymbolsValid, areHashtagsUnique, commentLength} from './validation-form.js';
 import {showAlert, blockSubmitButton, unblockSubmitButton} from './util.js';
-import {sliderValue, sliderElement, img} from './photo-filter.js';
+import {sliderElement} from './photo-filter.js';
 import {sendData} from './api.js';
 
 const imgOverlay = document.querySelector('.img-upload__overlay');
@@ -40,10 +40,8 @@ function closeWindow(){
   imgOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
   sliderElement.classList.add('hidden');
-  sliderValue.value='';
   document.querySelector('.img-upload__preview img').style.filter = '';
   document.getElementById('effect-none').checked = true;
-  img.classList='';
   document.querySelector('.img-upload__preview').style.transform='scale(1)';
   document.querySelector('.scale__control--value').value = `${100}%`;
   inputHashtags.value ='';

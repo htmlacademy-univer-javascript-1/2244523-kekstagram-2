@@ -48,7 +48,7 @@ function closeWindow(){
   document.querySelector('.scale__control--value').value = `${100}%`;
   inputHashtags.value ='';
   inputComments.value ='';
-  document.querySelectorAll('.pristine-error').forEach((e) => e.innerHTML  ='');
+  document.querySelectorAll('.pristine-error').forEach((e) = e.innerHTML  ='');
 }
 
 const cancel = document.querySelector('.img-upload__cancel');

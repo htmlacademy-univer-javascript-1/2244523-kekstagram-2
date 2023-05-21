@@ -10,7 +10,7 @@ const getData = (onSuccess) => {
     .then((response) => response.json())
     .then((photos) => {
       onSuccess(photos);
-  })
+    })
     .catch(() => { showAlert('Ошибка загрузки данных');});
 };
 

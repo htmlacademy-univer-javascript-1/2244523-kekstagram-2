@@ -15,7 +15,7 @@ function buttonFilterClick() {
     if (target && target.matches('.img-filters__button')) {
       filterButtons.forEach((btn) => {
         btn.classList.remove('img-filters__button--active');
-    });
+      });
       target.classList.add('img-filters__button--active');
     }
   });

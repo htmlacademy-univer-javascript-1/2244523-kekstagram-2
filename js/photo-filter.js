@@ -1,4 +1,3 @@
-
 const sliderElementBlock = document.querySelector('.effect-level'); 
 const sliderElement = document.querySelector('.effect-level__slider');
 const effectsList = document.querySelector('.effects__list');

@@ -1,90 +1,148 @@
-import './../nouislider/nouislider.js';
+const ALERT_SHOW_TIME=3000;
+const FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
-import { sliderElementBlock, sliderElement, effectLevelValue, imgUploadPreview } from './slider.js';
-import { isEscape } from './util.js';
-import { sendData } from './api.js';
-import { fileChooser } from './new-photo.js';
-import { showErrorMessage, showSuccessMessage } from './error.js';
-import { hashtagValidate, commentValidate, hashtags, commentField, imageLoad, onHashtagsTextInput, commentTextInput } from './validate.js';
-import { onScaleBiggerButtonClick, onScaleSmallerButtonClick, scaleSmallerButton, scaleBiggerButton } from './scale.js';
+import {inputHashtags, hashtagsValid, inputComments, isAmountValid, isEveryHashtagSymbolsValid, areHashtagsUnique, commentLength} from './validation-form.js';
+import {showAlert, blockSubmitButton, unblockSubmitButton} from './util.js';
+import {sliderElement} from './photo-filter.js';
+import {sendData} from './api.js';
 
-const formUploadImage = document.querySelector('.img-upload__form');
-const modalView = document.querySelector('body');
-const buttonModalClose = document.querySelector('.img-upload__cancel');
+const imgOverlay = document.querySelector('.img-upload__overlay');
+const start = document.querySelector('.img-upload__start input');
+const photoUser = document.querySelector('#upload-file');
+const body=document.querySelector('body');
+const form = document.querySelector('.img-upload__form');
+const submitButton = document.querySelector('#upload-submit');
+const fileChooser = document.querySelector('.img-upload__input');
+const preview = document.querySelector('.img-upload__preview img');
+const miniatures = document.querySelectorAll('.effects__preview');
+
+fileChooser.addEventListener('change', () => {
+  const file = fileChooser.files[0];
+  const fileName = file.name.toLowerCase();
+
+  const matches = FILE_TYPES.some((it) => fileName.endsWith(it));
+
+  if (matches) {
+    preview.src = URL.createObjectURL(file);
+    miniatures.forEach((miniature) => {
+      miniature.style.backgroundImage = `url(${preview.src})`;
+    });
+  }
+});
+
+start.onchange = function () {
+  imgOverlay.classList.remove('hidden');
+  body.classList.add('modal-open');
+  document.querySelector('.scale__control--value').value = `${100}%`;
+};
+
+function closeWindow(){
+  imgOverlay.classList.add('hidden');
+  body.classList.remove('modal-open');
+  sliderElement.classList.add('hidden');
+  document.querySelector('.img-upload__preview img').style.filter = '';
+  document.getElementById('effect-none').checked = true;
+  document.querySelector('.img-upload__preview').style.transform='scale(1)';
+  document.querySelector('.scale__control--value').value = `${100}%`;
+  inputHashtags.value ='';
+  inputComments.value ='';
+  document.querySelectorAll('.pristine-error').forEach((e) => {e.innerHTML  = '';});
+}
+
+const cancel = document.querySelector('.img-upload__cancel');
+cancel.addEventListener('click', () => {
+  closeWindow();
+  photoUser.value ='';
+});
+
+document.addEventListener('keydown', (evt) => {
+  if (evt.key === 'Escape') {
+    evt.preventDefault();
+    closeWindow();
+    photoUser.value = '';
+  }
+});
 
 
+const showSuccessMessageModal = () => {
+  const successModal = document.querySelector('#success').content.querySelector('.success');
+  const clonedSuccessModal = successModal.cloneNode(true);
+  const closeSuccessModalButtonElement = clonedSuccessModal.querySelector('.success__button');
 
-const scaleChange = () => {
-    scaleSmallerButton.addEventListener('click',onScaleSmallerButtonClick);
-    scaleBiggerButton.addEventListener('click', onScaleBiggerButtonClick);
+  closeSuccessModalButtonElement.addEventListener('click',(evt) =>{
+    evt.preventDefault();
+    body.removeChild(clonedSuccessModal);
+
+  } );
+
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      clonedSuccessModal.remove();
+    }
+  });
+
+  document.addEventListener('click',()  => {
+    clonedSuccessModal.remove();
+  });
+  document.body.append(clonedSuccessModal);
 };
 
 
-formUploadImage.addEventListener('change', () => {
-  openFormPopup();
-});
+const showErrorMessageModal = () =>{
+  const errorModal = document.querySelector('#error').content.querySelector('.error');
+  const clonedErrorModal = errorModal.cloneNode(true);
+  const closeErrorModalButtonElement = clonedErrorModal.querySelector('.error__button');
+  closeErrorModalButtonElement.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    body.removeChild(clonedErrorModal);
+  });
+  document.addEventListener('keydown', (evt) => {
+    if (evt.key === 'Escape') {
+      evt.preventDefault();
+      clonedErrorModal.remove();
+    }
+  });
+  document.addEventListener('click', () => {
+    clonedErrorModal.remove();
+  });
+  document.body.append(clonedErrorModal);
+  clonedErrorModal.style.zIndex = '100';
+  setTimeout(() => {
+    clonedErrorModal.remove();
+  }, ALERT_SHOW_TIME);
+};
 
+const pristine = new Pristine(form,{
+  classTo: 'img-upload__field-wrapper',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextClass: 'img-upload__field-wrapper__error-text'
+}, true);
 
-function openFormPopup() {
-  imageLoad.classList.remove('hidden');
-  modalView.classList.add('modal-open');
-  scaleChange();
-  hashtagValidate();
-  commentValidate();
-}
+pristine.addValidator(document.querySelector('[name="hashtags"]'), hashtagsValid);
 
+const formValidateCheck = () => {
+  pristine.addValidator(inputHashtags, isEveryHashtagSymbolsValid, 'Хэш-тег должен начинается с символа # и состоять из букв или чисел, без пробелов и спецсимволов. Максимальная длина одного хэш-тега 20 символов, включая решётку');
+  pristine.addValidator(inputHashtags, areHashtagsUnique, 'Хэш-теги не должны повторяться');
+  pristine.addValidator(inputHashtags, isAmountValid, 'Хэш-тегов не должно быть больше 5');
+  pristine.addValidator(inputHashtags, commentLength, 'Длина комментария не может составлять больше 140 символов');
+};
+formValidateCheck();
 
-buttonModalClose.addEventListener('click', (evt) => {
+form.addEventListener('submit', (evt) => {
   evt.preventDefault();
-  closeFormPopup();
-});
-
-
-function closeFormPopup() {
-  modalView.classList.remove('modal-open');
-  imageLoad.classList.add('hidden');
-  
-  scaleSmallerButton.removeEventListener('click', onScaleSmallerButtonClick);
-  scaleBiggerButton.removeEventListener('click', onScaleBiggerButtonClick);
-  hashtags.removeEventListener('input', onHashtagsTextInput);
-  commentField.addEventListener('input', commentTextInput);
-  
-  fileChooser.value = '';
-  scaleValueHidden.value = '100';
-  scaleControlValue.value = '100%';
-  imgUploadPreview.style.transform = 'scale(1)';
-  
-  sliderElementBlock.style.display = 'none';
-  sliderElement.style.display = 'none';
-  effectLevelValue.value = '';
-  imgUploadPreview.style.filter = 'none';
-  
-  hashtags.value = '';
-  commentField.value = '';
-}
-
-
-window.addEventListener('keydown', (evt) => {
-  if (isEscape(evt)) {
-    evt.preventDefault();
-    closeFormPopup();
-  }
-  window.removeEventListener('keydown', closeFormPopup);
-});
-
-
-const setImgUploadFormSubmit = (onSuccess) => {
-  formUploadImage.addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  if (inputHashtags.value === '' || pristine.validate() ) {
+    blockSubmitButton(submitButton);
     sendData(
-      () => showSuccessMessage('Форма успешно отправлена'),
-      () => showErrorMessage('При отправке формы возникла ошибка'),
-      () => onSuccess(),
+      () =>{ closeWindow(); showSuccessMessageModal();unblockSubmitButton(submitButton);},
+      () => { showAlert('Не удалось отправить форму. Попробуйте ещё раз'); showErrorMessageModal(); unblockSubmitButton(submitButton);},
       new FormData(evt.target),
     );
-  });
-};
-
-setImgUploadFormSubmit(closeFormPopup);
-
-export { formUploadImage, imageLoad, imgUploadPreview };
+    photoUser.value = '';
+    inputHashtags.value = '';
+    inputComments.value = '';
+  }
+  else {
+    showErrorMessageModal();
+  }
+});
